@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      - name: Build site
+        run: |
+          mkdir -p _site/nl _site/content/en _site/content/nl
+          cp style.css _site/style.css
+
+          # English homepage (default)
+          pandoc index.md \
+            --standalone \
+            --css style.css \
+            -o _site/index.html
+
+          # Dutch homepage
+          pandoc nl/index.md \
+            --standalone \
+            --css ../style.css \
+            -o _site/nl/index.html
+
+          # English content pages
+          for f in content/en/*.md; do
+            [ -f "$f" ] || continue
+            filename=$(basename "${f%.md}")
+            pandoc "$f" \
+              --standalone \
+              --css ../../style.css \
+              -o "_site/content/en/${filename}.html"
+          done
+
+          # Dutch content pages
+          for f in content/nl/*.md; do
+            [ -f "$f" ] || continue
+            filename=$(basename "${f%.md}")
+            pandoc "$f" \
+              --standalone \
+              --css ../../style.css \
+              -o "_site/content/nl/${filename}.html"
+          done
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
