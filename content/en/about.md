@@ -2,8 +2,6 @@
 title: About me
 ---
 
-<a class="back" href="../../index.html">← Back</a>
-
 # About me
 
 I'm Bram, UX Strategist and Systemic Designer based in Amsterdam.

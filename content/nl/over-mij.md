@@ -2,8 +2,6 @@
 title: Over mij
 ---
 
-<a class="back" href="../../nl/index.html">← Terug</a>
-
 # Over mij
 
 Ik ben Bram, UX Strateeg en Systemic Designer uit Amsterdam.

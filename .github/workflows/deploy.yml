@@ -18,30 +18,119 @@ jobs:
       - name: Install Pandoc
         run: sudo apt-get install -y pandoc
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Build site
         run: |
           mkdir -p _site/nl _site/content/en _site/content/nl
           cp style.css _site/style.css
 
-          # English homepage (default)
-          pandoc index.md \
+          # ── Feature 2: Wikilink preprocessing ─────────────────────────────
+          # Converts [[target|label]] → [label](target.html)
+          # Converts [[target]]       → [target](target.html)
+          preprocess() {
+            sed -E \
+              -e 's/\[\[([^|\]]+)\|([^\]]+)\]\]/[\2](\1.html)/g' \
+              -e 's/\[\[([^\]]+)\]\]/[\1](\1.html)/g' \
+              "$1"
+          }
+
+          # ── Feature 1: Pre-generate nav fragments ─────────────────────────
+
+          # EN index nav: language switch + search + auto page list
+          {
+            echo '<nav class="site-nav">'
+            echo '  <span class="nav-lang"><a href="index.html">EN</a> · <a href="nl/index.html">NL</a></span>'
+            echo '  <a class="nav-search" href="search-en.html">🔍</a>'
+            echo '</nav>'
+            echo '<section class="auto-nav"><ul>'
+            for f in content/en/*.md; do
+              [ -f "$f" ] || continue
+              title=$(grep -m1 '^title:' "$f" | sed 's/^title:[[:space:]]*//')
+              filename=$(basename "${f%.md}")
+              echo "  <li><a href=\"content/en/${filename}.html\">${title}</a></li>"
+            done
+            echo '</ul></section>'
+          } > _nav_en_index.html
+
+          # NL index nav: language switch + search + auto page list
+          {
+            echo '<nav class="site-nav">'
+            echo '  <span class="nav-lang"><a href="../index.html">EN</a> · <a href="index.html">NL</a></span>'
+            echo '  <a class="nav-search" href="../search-nl.html">🔍</a>'
+            echo '</nav>'
+            echo '<section class="auto-nav"><ul>'
+            for f in content/nl/*.md; do
+              [ -f "$f" ] || continue
+              title=$(grep -m1 '^title:' "$f" | sed 's/^title:[[:space:]]*//')
+              filename=$(basename "${f%.md}")
+              echo "  <li><a href=\"../content/nl/${filename}.html\">${title}</a></li>"
+            done
+            echo '</ul></section>'
+          } > _nav_nl_index.html
+
+          # EN content page nav: back + language switch + search
+          cat > _nav_en_page.html << 'NAVEOF'
+<nav class="site-nav">
+  <a class="nav-back" href="../../index.html">← Back</a>
+  <span class="nav-lang"><a href="../../index.html">EN</a> · <a href="../../nl/index.html">NL</a></span>
+  <a class="nav-search" href="../../search-en.html">🔍</a>
+</nav>
+NAVEOF
+
+          # NL content page nav: back + language switch + search
+          cat > _nav_nl_page.html << 'NAVEOF'
+<nav class="site-nav">
+  <a class="nav-back" href="../../nl/index.html">← Terug</a>
+  <span class="nav-lang"><a href="../../index.html">EN</a> · <a href="../../nl/index.html">NL</a></span>
+  <a class="nav-search" href="../../search-nl.html">🔍</a>
+</nav>
+NAVEOF
+
+          # ── Build pages ────────────────────────────────────────────────────
+
+          # English homepage
+          preprocess index.md | pandoc \
             --standalone \
             --css style.css \
+            --include-before-body _nav_en_index.html \
+            --lua-filter .pandoc/wikilinks.lua \
             -o _site/index.html
 
           # Dutch homepage
-          pandoc nl/index.md \
+          preprocess nl/index.md | pandoc \
             --standalone \
             --css ../style.css \
+            --include-before-body _nav_nl_index.html \
+            --lua-filter .pandoc/wikilinks.lua \
             -o _site/nl/index.html
+
+          # English search page
+          preprocess search-en.md | pandoc \
+            --standalone \
+            --css style.css \
+            --lua-filter .pandoc/wikilinks.lua \
+            -o _site/search-en.html
+
+          # Dutch search page
+          preprocess search-nl.md | pandoc \
+            --standalone \
+            --css style.css \
+            --lua-filter .pandoc/wikilinks.lua \
+            -o _site/search-nl.html
 
           # English content pages
           for f in content/en/*.md; do
             [ -f "$f" ] || continue
             filename=$(basename "${f%.md}")
-            pandoc "$f" \
+            preprocess "$f" | pandoc \
               --standalone \
               --css ../../style.css \
+              --include-before-body _nav_en_page.html \
+              --lua-filter .pandoc/wikilinks.lua \
               -o "_site/content/en/${filename}.html"
           done
 
@@ -49,11 +138,17 @@ jobs:
           for f in content/nl/*.md; do
             [ -f "$f" ] || continue
             filename=$(basename "${f%.md}")
-            pandoc "$f" \
+            preprocess "$f" | pandoc \
               --standalone \
               --css ../../style.css \
+              --include-before-body _nav_nl_page.html \
+              --lua-filter .pandoc/wikilinks.lua \
               -o "_site/content/nl/${filename}.html"
           done
+
+      # ── Feature 3: Search index ──────────────────────────────────────────
+      - name: Build search index (Pagefind)
+        run: npx pagefind --site _site
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4

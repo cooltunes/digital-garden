@@ -1,0 +1,32 @@
+Inject post-Pandoc vs. pre-generate Markdown include
+
+| | Inject post-Pandoc | Pre-generate include |
+|---|---|---|
+| **How** | Bash/sed rewrites the built HTML after Pandoc | Bash generates a `_nav.html` fragment, passed to Pandoc via `--include-before-body` |
+| **Reliability** | Fragile — depends on Pandoc's exact HTML output structure; breaks if Pandoc changes its wrapping | Stable — Pandoc owns the final render, the fragment is just injected cleanly |
+| **Complexity** | Parsing HTML with sed is messy and error-prone | One bash loop to generate the fragment, one extra flag per Pandoc call |
+| **Maintenance** | Hard to debug when it breaks | Easy — fragment is a plain HTML file you can inspect |
+| **Verdict** | Avoid | **Use this** |
+
+**Recommendation: pre-generate.** One bash loop extracts titles from frontmatter, writes `_nav_en.html` (and `_nav_nl.html`), each Pandoc call gets `--include-before-body _nav_en.html`. Zero manual work, zero fragility.
+
+---
+
+## On the nav header
+
+With your other decisions folded in, the header on every page looks like:
+
+```
+← Back     EN · NL · 🔍
+```
+
+- **EN** links to `../../index.html` (or `../index.html` from `nl/`)
+- **NL** links to `../../nl/index.html`
+- **🔍** links to `../../search-en.html` (EN pages) or `../../search-nl.html` (NL pages)
+- The auto-generated nav list appears below the header, above the page content
+
+This keeps the language switch and search together in one consistent spot on every page, generated automatically — nothing to maintain manually.
+
+---
+
+Ready to implement all three features in TASK-003? I can do it in one pass: auto nav with the pre-generate approach, wikilink Lua filter with alias support, and bilingual Pagefind search with the icon in the nav.
