@@ -5,7 +5,11 @@
   --max-width: 640px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
   font-family: Georgia, serif;
@@ -34,20 +38,36 @@ h2 {
   margin: 2.5rem 0 0.75rem;
 }
 
-p { margin-bottom: 1rem; }
+p {
+  margin-bottom: 1rem;
+}
 
 a {
   color: var(--text);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-a:hover { color: var(--accent); }
+a:hover {
+  color: var(--accent);
+}
 
-hr { border: none; border-top: 1px solid #ddd; margin: 2rem 0; }
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 2rem 0;
+}
 
-ul { list-style: none; padding: 0; }
-ul li { margin-bottom: 0.5rem; }
-ul li::before { content: "→ "; color: var(--accent); }
+ul {
+  list-style: none;
+  padding: 0;
+}
+ul li {
+  margin-bottom: 0.5rem;
+}
+ul li::before {
+  content: "→ ";
+  color: var(--accent);
+}
 
 em {
   color: var(--accent);
@@ -78,7 +98,9 @@ em {
   margin-right: auto;
   white-space: nowrap;
 }
-.nav-logo:hover { color: var(--accent); }
+.nav-logo:hover {
+  color: var(--accent);
+}
 
 .nav-links {
   display: flex;
@@ -92,8 +114,12 @@ em {
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
-.nav-links a:hover { color: var(--text); }
-.nav-sep { color: #ccc; }
+.nav-links a:hover {
+  color: var(--text);
+}
+.nav-sep {
+  color: #ccc;
+}
 
 .nav-right {
   display: flex;
@@ -107,14 +133,18 @@ em {
   color: var(--accent);
   font-size: 0.78rem;
 }
-.nav-lang a:hover { color: var(--text); }
+.nav-lang a:hover {
+  color: var(--text);
+}
 
 .nav-search {
   text-decoration: none;
   font-size: 0.85rem;
   color: var(--accent);
 }
-.nav-search:hover { color: var(--text); }
+.nav-search:hover {
+  color: var(--text);
+}
 
 .nav-back {
   display: inline-block;
@@ -123,14 +153,19 @@ em {
   text-decoration: none;
   margin-bottom: 2rem;
 }
-.nav-back:hover { color: var(--text); }
+.nav-back:hover {
+  color: var(--text);
+}
 
 /* ── Auto-nav list (homepage) ──────────────────────────────────────────── */
 
 .auto-nav {
   margin-bottom: 2.5rem;
 }
-.auto-nav ul li::before { content: "→ "; color: var(--accent); }
+.auto-nav ul li::before {
+  content: "→ ";
+  color: var(--accent);
+}
 
 /* ── Note cards (homepage listing) ────────────────────────────────────── */
 
@@ -142,7 +177,9 @@ em {
   padding: 1.1rem 0;
   border-bottom: 1px solid #e8e8e4;
 }
-.note-card:last-child { border-bottom: none; }
+.note-card:last-child {
+  border-bottom: none;
+}
 
 .note-card-header {
   display: flex;
@@ -178,9 +215,18 @@ em {
   border-radius: 2px;
   white-space: nowrap;
 }
-.note-type--seedling  { color: #6d9b5a; border-color: #b8d4b0; }
-.note-type--growing   { color: #7a6b9e; border-color: #c4b8d4; }
-.note-type--evergreen { color: #4a8a7e; border-color: #a8ccc8; }
+.note-type--seedling {
+  color: #6d9b5a;
+  border-color: #b8d4b0;
+}
+.note-type--growing {
+  color: #7a6b9e;
+  border-color: #c4b8d4;
+}
+.note-type--evergreen {
+  color: #4a8a7e;
+  border-color: #a8ccc8;
+}
 
 .note-category {
   font-size: 0.78rem;
@@ -243,5 +289,54 @@ em {
 .note-footer small {
   font-size: 0.75rem;
   color: #bbb;
+  font-family: Georgia, serif;
+}
+
+/* ── Note Summary (Index Page) ─────────────────────────────────────────── */
+
+.note-summary {
+  display: block;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  text-decoration: none; /* Remove default underline from container if it's an anchor */
+  color: inherit;
+}
+.note-summary:last-child {
+  border-bottom: none;
+}
+
+.note-summary-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+.note-summary-title a {
+  text-decoration: none;
+  color: var(--text);
+}
+.note-summary-title a:hover {
+  text-decoration: underline;
+  color: var(--accent);
+}
+
+.note-summary-meta {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+.note-summary-author {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+  font-style: italic;
+}
+
+.note-summary-footer {
+  font-size: 0.8rem;
+  color: #999;
   font-family: Georgia, serif;
 }

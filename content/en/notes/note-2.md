@@ -1,25 +1,25 @@
 ---
-title: "Note 2"
-description: "Placeholder note — replace with your own content"
+title: Note 2
+description: Placeholder note — replace with your own content
 
-author: "Bram"
-written_by: "100% human"
+author: Bram
+written_by: 100% human
 
-status: "draft"
-type: "seedling"
+status: draft
+type: seedling
 
-category: ""
-tags: ""
+category: 
+tags: 
 
-language: "en"
-translation: ""
+language: en
+translation: 
 
-source: ""
-related: ""
+source: 
+related: 
 
-created: "2026-03-23"
-modified: "2026-03-23"
-version: "v01"
+created: 2026-03-23
+modified: 2026-03-23
+version: v01
 ---
 
 # Note 2

@@ -12,6 +12,20 @@ Wordt vervolgd...
 
 ## Notities
 
+<div class="note-summary">
+  <div class="note-summary-title"><a href="../notes/note-2.md">Notitie 2</a></div>
+  <div class="note-summary-meta">PKM | Voorbeeldnotitie — vervang door je eigen inhoud</div>
+  <div class="note-summary-author">By Bram (100% Human)</div>
+  <div class="note-summary-footer">March 23, 2026 - tag1 tag2</div>
+</div>
+
+<div class="note-summary">
+  <div class="note-summary-title"><a href="../notes/note-1.md">Notitie 1</a></div>
+  <div class="note-summary-meta">PKM | Voorbeeldnotitie — vervang door je eigen inhoud</div>
+  <div class="note-summary-author">By Bram (100% Human)</div>
+  <div class="note-summary-footer">March 23, 2026 - tag1 tag2</div>
+</div>
+
 
 ---
 
