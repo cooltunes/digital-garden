@@ -131,3 +131,117 @@ em {
   margin-bottom: 2.5rem;
 }
 .auto-nav ul li::before { content: "→ "; color: var(--accent); }
+
+/* ── Note cards (homepage listing) ────────────────────────────────────── */
+
+.notes-list {
+  margin-top: 0.5rem;
+}
+
+.note-card {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid #e8e8e4;
+}
+.note-card:last-child { border-bottom: none; }
+
+.note-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.note-card h3 {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: normal;
+  margin: 0 0 0.3rem;
+}
+.note-card h3 a {
+  text-decoration: none;
+  color: var(--text);
+}
+.note-card h3 a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.note-type {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-family: Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.note-type--seedling  { color: #6d9b5a; border-color: #b8d4b0; }
+.note-type--growing   { color: #7a6b9e; border-color: #c4b8d4; }
+.note-type--evergreen { color: #4a8a7e; border-color: #a8ccc8; }
+
+.note-category {
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-style: italic;
+}
+
+.note-desc {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.55;
+  margin: 0 0 0.4rem;
+}
+
+.note-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.1rem;
+}
+
+.note-author {
+  font-size: 0.76rem;
+  color: var(--accent);
+}
+
+.note-tags {
+  font-size: 0.74rem;
+  color: #aaa;
+}
+
+/* ── Note page: category label above title ─────────────────────────────── */
+
+.note-category-label {
+  font-size: 0.76rem;
+  font-family: Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+
+/* ── Note page: byline below title ────────────────────────────────────── */
+
+.note-byline {
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-top: -1rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Note page footer ──────────────────────────────────────────────────── */
+
+.note-footer {
+  margin-top: 3rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e8e8e4;
+}
+.note-footer small {
+  font-size: 0.75rem;
+  color: #bbb;
+  font-family: Georgia, serif;
+}
