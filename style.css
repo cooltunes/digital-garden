@@ -317,7 +317,7 @@ em {
 /* When hovering the card, underline the title */
 .note-summary:hover .note-summary-title {
   text-decoration: underline;
-  color: var(--accent);
+  text-underline-offset: 3px;
 }
 
 .note-summary-meta {
