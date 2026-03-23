@@ -40,12 +40,14 @@ jobs:
               "$1"
           }
 
-          # Extract title from YAML frontmatter
-          get_title() {
-            grep -m1 '^title:' "$1" | sed 's/^title:[[:space:]]*//'
+          # Extract a YAML frontmatter field value (handles quoted & unquoted)
+          get_field() {
+            grep -m1 "^$2:" "$1" | sed "s/^$2:[[:space:]]*//" | tr -d '"' | xargs
           }
 
-          # ── Root redirect ──────────────────────────────────────────────────
+          get_title() { get_field "$1" "title"; }
+
+          # ── Root redirect ─────────────────────────────────────────────────
           {
             echo '<!DOCTYPE html>'
             echo '<html lang="en"><head><meta charset="utf-8">'
@@ -54,99 +56,80 @@ jobs:
             echo '</head><body><a href="en/">Digital Garden</a></body></html>'
           } > _site/index.html
 
-          # ── Feature 1: Pre-generate nav fragments ─────────────────────────
-          # All pages are now in _site/en/ or _site/nl/ (flat, same level).
-          # All relative links resolve within that folder.
+          # ── Generate notes listing fragments ──────────────────────────────
+          # Builds _notes_listing_{lang}.html with note cards containing:
+          # type badge, category, title (linked), description, author, tags.
+          # Sorted by `created` field, newest first.
 
-          # EN index nav: logo + HOME|ABOUT + EN·NL + search + auto page list
-          {
-            echo '<nav class="site-nav">'
-            echo '  <a class="nav-logo" href="index.html">Digital Garden</a>'
-            echo '  <span class="nav-links">'
-            echo '    <a href="index.html">HOME</a>'
-            echo '    <span class="nav-sep">|</span>'
-            echo '    <a href="about.html">ABOUT</a>'
-            echo '  </span>'
-            echo '  <span class="nav-right">'
-            echo '    <span class="nav-lang"><a href="index.html">EN</a> &middot; <a href="../nl/index.html">NL</a></span>'
-            echo '    <a class="nav-search" href="search.html">&#x1F50D;</a>'
-            echo '  </span>'
-            echo '</nav>'
-            echo '<section class="auto-nav"><ul>'
-            for f in content/en/*.md; do
-              [ -f "$f" ] || continue
-              title=$(get_title "$f")
-              filename=$(basename "${f%.md}")
-              echo "  <li><a href=\"${filename}.html\">${title}</a></li>"
-            done
-            echo '</ul></section>'
-          } > _nav_en_index.html
+          build_notes_listing() {
+            local lang="$1"
+            local dir="content/${lang}/notes"
+            local out="_notes_listing_${lang}.html"
+            local by_label
+            [ "$lang" = "en" ] && by_label="by" || by_label="door"
 
-          # NL index nav
-          {
-            echo '<nav class="site-nav">'
-            echo '  <a class="nav-logo" href="index.html">Digital Garden</a>'
-            echo '  <span class="nav-links">'
-            echo '    <a href="index.html">HOME</a>'
-            echo '    <span class="nav-sep">|</span>'
-            echo '    <a href="over-mij.html">OVER MIJ</a>'
-            echo '  </span>'
-            echo '  <span class="nav-right">'
-            echo '    <span class="nav-lang"><a href="../en/index.html">EN</a> &middot; <a href="index.html">NL</a></span>'
-            echo '    <a class="nav-search" href="search.html">&#x1F50D;</a>'
-            echo '  </span>'
-            echo '</nav>'
-            echo '<section class="auto-nav"><ul>'
-            for f in content/nl/*.md; do
-              [ -f "$f" ] || continue
-              title=$(get_title "$f")
-              filename=$(basename "${f%.md}")
-              echo "  <li><a href=\"${filename}.html\">${title}</a></li>"
-            done
-            echo '</ul></section>'
-          } > _nav_nl_index.html
+            {
+              echo '<section class="notes-list">'
+              while IFS= read -r f; do
+                [ -f "$f" ] || continue
+                local slug title type category description author tags
+                slug=$(basename "${f%.md}")
+                title=$(get_field "$f" "title")
+                type=$(get_field "$f" "type")
+                category=$(get_field "$f" "category")
+                description=$(get_field "$f" "description")
+                author=$(get_field "$f" "author")
+                tags=$(get_field "$f" "tags")
 
-          # EN content page nav: full nav bar + back link on second line
-          {
-            echo '<nav class="site-nav">'
-            echo '  <a class="nav-logo" href="index.html">Digital Garden</a>'
-            echo '  <span class="nav-links">'
-            echo '    <a href="index.html">HOME</a>'
-            echo '    <span class="nav-sep">|</span>'
-            echo '    <a href="about.html">ABOUT</a>'
-            echo '  </span>'
-            echo '  <span class="nav-right">'
-            echo '    <span class="nav-lang"><a href="index.html">EN</a> &middot; <a href="../nl/index.html">NL</a></span>'
-            echo '    <a class="nav-search" href="search.html">&#x1F50D;</a>'
-            echo '  </span>'
-            echo '</nav>'
-            echo '<p><a class="nav-back" href="index.html">&larr; Back</a></p>'
-          } > _nav_en_page.html
+                echo '<article class="note-card">'
+                echo '  <div class="note-card-header">'
+                [ -n "$type" ] && \
+                  echo "    <span class=\"note-type note-type--${type}\">${type}</span>"
+                [ -n "$category" ] && \
+                  echo "    <span class=\"note-category\">${category}</span>"
+                echo '  </div>'
+                echo "  <h3><a href=\"${slug}.html\">${title}</a></h3>"
+                [ -n "$description" ] && \
+                  echo "  <p class=\"note-desc\">${description}</p>"
+                echo '  <div class="note-card-footer">'
+                [ -n "$author" ] && \
+                  echo "    <span class=\"note-author\">${by_label} ${author}</span>"
+                [ -n "$tags" ] && \
+                  echo "    <span class=\"note-tags\">${tags}</span>"
+                echo '  </div>'
+                echo '</article>'
+              done < <(
+                for n in "$dir"/*.md; do
+                  [ -f "$n" ] || continue
+                  c=$(get_field "$n" "created")
+                  echo "${c:-0000-00-00} $n"
+                done | sort -rk1 | awk '{print $2}'
+              )
+              echo '</section>'
+            } > "$out"
+          }
 
-          # NL content page nav: full nav bar + back link on second line
-          {
-            echo '<nav class="site-nav">'
-            echo '  <a class="nav-logo" href="index.html">Digital Garden</a>'
-            echo '  <span class="nav-links">'
-            echo '    <a href="index.html">HOME</a>'
-            echo '    <span class="nav-sep">|</span>'
-            echo '    <a href="over-mij.html">OVER MIJ</a>'
-            echo '  </span>'
-            echo '  <span class="nav-right">'
-            echo '    <span class="nav-lang"><a href="../en/index.html">EN</a> &middot; <a href="index.html">NL</a></span>'
-            echo '    <a class="nav-search" href="search.html">&#x1F50D;</a>'
-            echo '  </span>'
-            echo '</nav>'
-            echo '<p><a class="nav-back" href="index.html">&larr; Terug</a></p>'
-          } > _nav_nl_page.html
+          build_notes_listing en
+          build_notes_listing nl
 
-          # ── Build pages ────────────────────────────────────────────────────
-          # --metadata title="" suppresses Pandoc's auto-generated <h1> block.
-          # --metadata pagetitle="..." sets the browser <title> tag instead.
+          # ── English homepage → _site/en/index.html ────────────────────────
+          cat > _nav_en_index.html << 'NAVEOF'
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">ABOUT</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="index.html">EN</a> &middot; <a href="../nl/index.html">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+NAVEOF
 
-          # English homepage → _site/en/index.html
-          pt=$(get_title en/index.md)
-          preprocess en/index.md | pandoc \
+          pt=$(get_title "content/en/en/index.md")
+          preprocess "content/en/en/index.md" | pandoc \
             --standalone \
             --css ../style.css \
             --metadata pagetitle="$pt" \
@@ -155,9 +138,32 @@ jobs:
             --lua-filter .pandoc/wikilinks.lua \
             -o _site/en/index.html
 
-          # Dutch homepage → _site/nl/index.html
-          pt=$(get_title nl/index.md)
-          preprocess nl/index.md | pandoc \
+          # Inject notes listing right after the <h2 id="notes"> heading
+          awk '/<h2 id="notes">/{
+            print
+            while((getline line < "_notes_listing_en.html") > 0) print line
+            close("_notes_listing_en.html")
+            next
+          }1' _site/en/index.html > _tmp.html && mv _tmp.html _site/en/index.html
+
+          # ── Dutch homepage → _site/nl/index.html ──────────────────────────
+          cat > _nav_nl_index.html << 'NAVEOF'
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">OVER MIJ</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="../en/index.html">EN</a> &middot; <a href="index.html">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+NAVEOF
+
+          pt=$(get_title "content/nl/nl/index.md")
+          preprocess "content/nl/nl/index.md" | pandoc \
             --standalone \
             --css ../style.css \
             --metadata pagetitle="$pt" \
@@ -166,59 +172,236 @@ jobs:
             --lua-filter .pandoc/wikilinks.lua \
             -o _site/nl/index.html
 
-          # English search page → _site/en/search.html
-          pt=$(get_title en/search.md)
-          preprocess en/search.md | pandoc \
-            --standalone \
-            --css ../style.css \
-            --metadata pagetitle="$pt" \
-            --metadata title="" \
-            --include-before-body _nav_en_index.html \
-            --lua-filter .pandoc/wikilinks.lua \
-            -o _site/en/search.html
+          # Inject notes listing right after the <h2 id="notities"> heading
+          awk '/<h2 id="notities">/{
+            print
+            while((getline line < "_notes_listing_nl.html") > 0) print line
+            close("_notes_listing_nl.html")
+            next
+          }1' _site/nl/index.html > _tmp.html && mv _tmp.html _site/nl/index.html
 
-          # Dutch search page → _site/nl/search.html
-          pt=$(get_title nl/search.md)
-          preprocess nl/search.md | pandoc \
-            --standalone \
-            --css ../style.css \
-            --metadata pagetitle="$pt" \
-            --metadata title="" \
-            --include-before-body _nav_nl_index.html \
-            --lua-filter .pandoc/wikilinks.lua \
-            -o _site/nl/search.html
-
-          # English content pages → _site/en/
-          for f in content/en/*.md; do
+          # ── English pages (about, search) → _site/en/ ────────────────────
+          # Language switcher links to the same slug in the NL folder.
+          for f in content/en/pages/*.md; do
             [ -f "$f" ] || continue
-            filename=$(basename "${f%.md}")
+            slug=$(basename "${f%.md}")
             pt=$(get_title "$f")
+
+            cat > _nav_page.html << EOF
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">ABOUT</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="${slug}.html">EN</a> &middot; <a href="../nl/${slug}.html">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+<p><a class="nav-back" href="index.html">&larr; Back</a></p>
+EOF
+
             preprocess "$f" | pandoc \
               --standalone \
               --css ../style.css \
               --metadata pagetitle="$pt" \
               --metadata title="" \
-              --include-before-body _nav_en_page.html \
+              --include-before-body _nav_page.html \
               --lua-filter .pandoc/wikilinks.lua \
-              -o "_site/en/${filename}.html"
+              -o "_site/en/${slug}.html"
           done
 
-          # Dutch content pages → _site/nl/
-          for f in content/nl/*.md; do
+          # ── Dutch pages (about, search) → _site/nl/ ───────────────────────
+          for f in content/nl/pages/*.md; do
             [ -f "$f" ] || continue
-            filename=$(basename "${f%.md}")
+            slug=$(basename "${f%.md}")
             pt=$(get_title "$f")
+
+            cat > _nav_page.html << EOF
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">OVER MIJ</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="../en/${slug}.html">EN</a> &middot; <a href="${slug}.html">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+<p><a class="nav-back" href="index.html">&larr; Terug</a></p>
+EOF
+
             preprocess "$f" | pandoc \
               --standalone \
               --css ../style.css \
               --metadata pagetitle="$pt" \
               --metadata title="" \
-              --include-before-body _nav_nl_page.html \
+              --include-before-body _nav_page.html \
               --lua-filter .pandoc/wikilinks.lua \
-              -o "_site/nl/${filename}.html"
+              -o "_site/nl/${slug}.html"
           done
 
-      # ── Feature 3: Search index ──────────────────────────────────────────
+          # ── English notes → _site/en/ ────────────────────────────────────
+          # Each note gets:
+          #   - A nav bar with translation-aware language switcher
+          #   - Category label injected before <h1> in the HTML output
+          #   - Byline (author · created · written_by) injected after <h1>
+          #   - Footer (created · modified · version) via --include-after-body
+          for f in content/en/notes/*.md; do
+            [ -f "$f" ] || continue
+            slug=$(basename "${f%.md}")
+            title=$(get_title "$f")
+            category=$(get_field "$f" "category")
+            author=$(get_field "$f" "author")
+            note_created=$(get_field "$f" "created")
+            note_modified=$(get_field "$f" "modified")
+            note_version=$(get_field "$f" "version")
+            written_by=$(get_field "$f" "written_by")
+            translation=$(get_field "$f" "translation")
+
+            # Language switcher: link to NL translation or fall back to NL index
+            if [ -n "$translation" ]; then
+              nl_link="../nl/${translation}.html"
+            else
+              nl_link="../nl/index.html"
+            fi
+
+            cat > _note_nav.html << EOF
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">ABOUT</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="${slug}.html">EN</a> &middot; <a href="${nl_link}">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+<p><a class="nav-back" href="index.html">&larr; Back</a></p>
+EOF
+
+            # Build footer: created · modified · version
+            footer_text=""
+            [ -n "$note_created" ] && footer_text="$note_created"
+            [ -n "$note_modified" ] && \
+              footer_text="${footer_text:+${footer_text} &middot; modified ${note_modified}}"
+            [ -n "$note_version" ] && \
+              footer_text="${footer_text:+${footer_text} &middot; }${note_version}"
+            echo "<footer class=\"note-footer\"><small>${footer_text}</small></footer>" \
+              > _note_footer.html
+
+            preprocess "$f" | pandoc \
+              --standalone \
+              --css ../style.css \
+              --metadata pagetitle="$title" \
+              --metadata title="" \
+              --include-before-body _note_nav.html \
+              --include-after-body _note_footer.html \
+              --lua-filter .pandoc/wikilinks.lua \
+              -o "_site/en/${slug}.html"
+
+            # Build byline: author · created · written_by
+            byline=""
+            [ -n "$author" ] && byline="$author"
+            [ -n "$note_created" ] && \
+              byline="${byline:+${byline} &middot; }${note_created}"
+            [ -n "$written_by" ] && \
+              byline="${byline:+${byline} &middot; }${written_by}"
+
+            # Post-process: inject category label before <h1>, byline after <h1>
+            awk \
+              -v cat="$category" \
+              -v byline_text="$byline" \
+              '/<h1[> ]/{
+                if (cat != "") print "<p class=\"note-category-label\">" cat "</p>"
+                print
+                if (byline_text != "") print "<p class=\"note-byline\">" byline_text "</p>"
+                next
+              }1' "_site/en/${slug}.html" > _tmp.html \
+              && mv _tmp.html "_site/en/${slug}.html"
+          done
+
+          # ── Dutch notes → _site/nl/ ──────────────────────────────────────
+          for f in content/nl/notes/*.md; do
+            [ -f "$f" ] || continue
+            slug=$(basename "${f%.md}")
+            title=$(get_title "$f")
+            category=$(get_field "$f" "category")
+            author=$(get_field "$f" "author")
+            note_created=$(get_field "$f" "created")
+            note_modified=$(get_field "$f" "modified")
+            note_version=$(get_field "$f" "version")
+            written_by=$(get_field "$f" "written_by")
+            translation=$(get_field "$f" "translation")
+
+            # Language switcher: link to EN translation or fall back to EN index
+            if [ -n "$translation" ]; then
+              en_link="../en/${translation}.html"
+            else
+              en_link="../en/index.html"
+            fi
+
+            cat > _note_nav.html << EOF
+<nav class="site-nav">
+  <a class="nav-logo" href="index.html">Digital Garden</a>
+  <span class="nav-links">
+    <a href="index.html">HOME</a>
+    <span class="nav-sep">|</span>
+    <a href="about.html">OVER MIJ</a>
+  </span>
+  <span class="nav-right">
+    <span class="nav-lang"><a href="${en_link}">EN</a> &middot; <a href="${slug}.html">NL</a></span>
+    <a class="nav-search" href="search.html">&#x1F50D;</a>
+  </span>
+</nav>
+<p><a class="nav-back" href="index.html">&larr; Terug</a></p>
+EOF
+
+            footer_text=""
+            [ -n "$note_created" ] && footer_text="$note_created"
+            [ -n "$note_modified" ] && \
+              footer_text="${footer_text:+${footer_text} &middot; gewijzigd ${note_modified}}"
+            [ -n "$note_version" ] && \
+              footer_text="${footer_text:+${footer_text} &middot; }${note_version}"
+            echo "<footer class=\"note-footer\"><small>${footer_text}</small></footer>" \
+              > _note_footer.html
+
+            preprocess "$f" | pandoc \
+              --standalone \
+              --css ../style.css \
+              --metadata pagetitle="$title" \
+              --metadata title="" \
+              --include-before-body _note_nav.html \
+              --include-after-body _note_footer.html \
+              --lua-filter .pandoc/wikilinks.lua \
+              -o "_site/nl/${slug}.html"
+
+            byline=""
+            [ -n "$author" ] && byline="$author"
+            [ -n "$note_created" ] && \
+              byline="${byline:+${byline} &middot; }${note_created}"
+            [ -n "$written_by" ] && \
+              byline="${byline:+${byline} &middot; }${written_by}"
+
+            awk \
+              -v cat="$category" \
+              -v byline_text="$byline" \
+              '/<h1[> ]/{
+                if (cat != "") print "<p class=\"note-category-label\">" cat "</p>"
+                print
+                if (byline_text != "") print "<p class=\"note-byline\">" byline_text "</p>"
+                next
+              }1' "_site/nl/${slug}.html" > _tmp.html \
+              && mv _tmp.html "_site/nl/${slug}.html"
+          done
+
+      # ── Search index ─────────────────────────────────────────────────────
       - name: Build search index (Pagefind)
         run: npx pagefind --site _site
 
