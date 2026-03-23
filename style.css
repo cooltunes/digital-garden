@@ -311,12 +311,11 @@ em {
   font-weight: bold;
   margin-bottom: 0.35rem;
   display: block;
-}
-.note-summary-title a {
-  text-decoration: none;
   color: var(--text);
 }
-.note-summary-title a:hover {
+
+/* When hovering the card, underline the title */
+.note-summary:hover .note-summary-title {
   text-decoration: underline;
   color: var(--accent);
 }
