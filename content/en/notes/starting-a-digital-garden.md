@@ -31,9 +31,9 @@ Seeing, hearing, feeling, thinking, drawing, talking, writing, typing. It is sti
 So, for now, I think I'll do that.
 
 ### About this note
-This is an edited speech-to-text transcript. I think some guidelines are important. I will write or talk myself through it and edit it. I will not use any AI for the writing, only to clean up the "ums" and "uhs" that I just pronounced while talking, and then hand-edit it. So no AI involved there
+This is an edited speech-to-text transcript. I think some guidelines are important. I will write or talk myself through it and edit it. I will not use any AI for the writing, only to clean up the "ums" and "uhs" that I just pronounced while talking, and then hand-edit it. So no AI involved there.
 
-I think I will close each post with at least some tidbits. There will always be a song reference. The first one will be "Garden" by Magnapop.
+I think I will close each post with at least some tidbits. There will always be a song reference. 
 
 
 ## Related
