@@ -20,7 +20,7 @@ ___
 
 ## Want to start your own digital garden?
 
-In this [github repository](https://github.com/cooltunes/digital-garden) you'll find everything you need to get started!
+In this [github repository](https://github.com/cooltunes/digital-garden) you'll find everything you need to get started.
 
 Enjoy!
 
