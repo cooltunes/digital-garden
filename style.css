@@ -262,20 +262,20 @@ em {
 /* ── Note page: category label above title ─────────────────────────────── */
 
 .note-category-label {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-family: Georgia, serif;
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--accent);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.15rem;
 }
 
 /* ── Note page: byline below title ────────────────────────────────────── */
 
 .note-byline {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--accent);
-  margin-top: -1rem;
+  margin-top: -0.75rem;
   margin-bottom: 2rem;
 }
 
@@ -287,7 +287,7 @@ em {
   border-top: 1px solid #e8e8e4;
 }
 .note-footer small {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #bbb;
   font-family: Georgia, serif;
 }
