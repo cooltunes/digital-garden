@@ -109,7 +109,7 @@ jobs:
                   [ -f "$n" ] || continue
                   c=$(get_field "$n" "created")
                   echo "${c:-0000-00-00} $n"
-                done | sort -rk1 | awk '{print $2}'
+                done | sort -rk1 | sed 's/^[^ ]* //'
               )
               echo '</section>'
             } > "$out"
