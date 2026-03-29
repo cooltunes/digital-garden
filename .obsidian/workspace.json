@@ -55,7 +55,7 @@
               "state": {
                 "file": "content/en/notes/The Drop.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "The Drop"
