@@ -53,12 +53,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/en/notes/The Drop.md",
+                "file": "content/en/notes/About Tacit Knowledge.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "The Drop"
+              "title": "About Tacit Knowledge"
             }
           }
         ],
@@ -195,26 +195,17 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "content/en/notes/About Tacit Knowledge.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
-            }
-          },
-          {
-            "id": "a7b7d161fb968f44",
-            "type": "leaf",
-            "state": {
-              "type": "git-view",
-              "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
+              "title": "Outline of About Tacit Knowledge"
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -228,14 +219,14 @@
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
       "bases:Create new base": false,
-      "obsidian-git:Open Git source control": false,
       "templater-obsidian:Templater": false
     }
   },
-  "active": "f740106dc02d1480",
+  "active": "7e7183aa6c3bda38",
   "lastOpenFiles": [
-    "content/en/en/index.md",
+    "content/en/notes/About Tacit Knowledge.md",
     "content/en/notes/The Drop.md",
+    "content/en/en/index.md",
     "_comms/06_TROUBLESHOOTING",
     "content/en/notes/We are all maintenance engineers now.md",
     "Untitled 2.md",
