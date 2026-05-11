@@ -88,7 +88,8 @@ Werner Herzog captures that kind of question better than anyone. Not with answer
 ***
 
 *Watch Tina in Sexbierum on [NPO Start](https://npo.nl/start/serie/tina-in-sexbierum/afleveringen)*
-*Watch Ghost Elephants in a Cinema near you! Trailer on [YouTube](https://www.youtube.com/watch?v=YoOD-2Wn7ik)*
+*Watch Ghost Elephants in a Cinema near you!*
+*Trailer on [YouTube](https://www.youtube.com/watch?v=YoOD-2Wn7ik)*
 
 ***
 
