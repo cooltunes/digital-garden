@@ -53,12 +53,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/en/notes/About Tacit Knowledge.md",
+                "file": "content/en/notes/Connecting the Dots.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "About Tacit Knowledge"
+              "title": "Connecting the Dots"
             }
           }
         ],
@@ -195,13 +195,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "content/en/notes/About Tacit Knowledge.md",
+                "file": "content/en/notes/Connecting the Dots.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of About Tacit Knowledge"
+              "title": "Outline of Connecting the Dots"
             }
           }
         ],
@@ -222,9 +222,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "7e7183aa6c3bda38",
+  "active": "f740106dc02d1480",
   "lastOpenFiles": [
     "content/en/notes/About Tacit Knowledge.md",
+    "content/en/notes/Connecting the Dots.md",
     "content/en/notes/The Drop.md",
     "content/en/en/index.md",
     "_comms/06_TROUBLESHOOTING",
