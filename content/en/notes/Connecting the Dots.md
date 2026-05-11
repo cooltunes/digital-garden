@@ -2,7 +2,7 @@
 title: Connecting the dots
 description: On tracing your origins and looking for the source
 author: Bram
-written_by: 100% human
+written_by: 50% human
 status: draft
 type: seedling
 category: Life
